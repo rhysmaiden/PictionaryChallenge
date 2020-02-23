@@ -35,6 +35,7 @@ const GameSchema = new Schema({
 });
 
 const LobbySchema = new Schema({
+  name: String,
   queue: [UserSchema]
 });
 

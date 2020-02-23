@@ -26,22 +26,44 @@ io.on("connection", async socket => {
 
   socket.on("close", async ({ username }, callback) => {
     console.log("Disconnect");
-
     socket.disconnect();
+
+    await Lobby.updateOne(
+      { name: "lobby" },
+      { $pull: { queue: { username: username } } }
+    ).then(lob => {
+      lobbyObject = lob;
+    });
   });
 
   socket.on("joinQueue", async ({ username }, callback) => {
+    socket.join("lobby");
     // Get user
     User.findOne({ username: username }).then(async user => {
-      //Add player to queue
-      Lobby.updateOne({ name: "lobby" }, { $push: { queue: user } }).then(
-        async lobby => {
-          checkQueue();
-        }
-      );
+      // Remove  this whole if statement after social media login is implemented. Keep else
+      if (user == null) {
+        console.log("User doesn't exist, needs to login");
+        User.create({ username: username }).then(async newUser => {
+          Lobby.updateOne(
+            { name: "lobby" },
+            { $push: { queue: newUser } }
+          ).then(async lobby => {
+            checkQueue();
+          });
+        });
+      } else {
+        //Add player to queue
+        Lobby.updateOne({ name: "lobby" }, { $addToSet: { queue: user } }).then(
+          async lobby => {
+            checkQueue();
+          }
+        );
+      }
     });
   });
 });
+
+const joinLobby = () => {};
 
 const checkQueue = async lobby => {
   let lobbyObject;
@@ -56,17 +78,23 @@ const checkQueue = async lobby => {
     lobbyObject = lobby;
   }
 
+  console.log(lobbyObject);
+
+  io.to("lobby").emit("queue", lobbyObject.queue);
+
   if (lobbyObject.queue.length >= GAME_USERS) {
     //Game created with first X users
-
-    let game_users = lobbyObject.slice(0, GAME_USERS);
+    console.log("START A GAME");
+    let game_users = lobbyObject.queue.slice(0, GAME_USERS);
     createGame(game_users);
 
     //Remove users from queue
     await Lobby.updateOne(
       { name: "lobby" },
       { $pull: { queue: { $in: game_users } } }
-    );
+    ).then(newLob => {
+      console.log(newLob);
+    });
   }
 };
 
@@ -79,5 +107,5 @@ app.use(router);
 server.listen(PORT, () => {
   console.log("Server has started");
 
-  Lobby.create({ name: "lobby" });
+  //Lobby.create({ name: "lobby" });
 });
