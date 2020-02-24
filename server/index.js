@@ -15,92 +15,77 @@ const {
 const ip = require("ip");
 
 const PORT = process.env.PORT || 5000;
+const PLAYERS_REQUIRED = 2;
 
 const router = require("./router");
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+//SOCKETS
 io.on("connection", async socket => {
   console.log("New connection");
 
   socket.on("close", async ({ username }, callback) => {
-    console.log("Disconnect");
-    socket.disconnect();
-
-    await Lobby.updateOne(
-      { name: "lobby" },
-      { $pull: { queue: { username: username } } }
-    ).then(lob => {
-      lobbyObject = lob;
-    });
+    removeUserFromLobby(socket, username);
   });
 
   socket.on("joinQueue", async ({ username }, callback) => {
-    socket.join("lobby");
-    // Get user
-    User.findOne({ username: username }).then(async user => {
-      // Remove  this whole if statement after social media login is implemented. Keep else
-      if (user == null) {
-        console.log("User doesn't exist, needs to login");
-        User.create({ username: username }).then(async newUser => {
-          Lobby.updateOne(
-            { name: "lobby" },
-            { $push: { queue: newUser } }
-          ).then(async lobby => {
-            checkQueue();
-          });
-        });
-      } else {
-        //Add player to queue
-        Lobby.updateOne({ name: "lobby" }, { $addToSet: { queue: user } }).then(
-          async lobby => {
-            checkQueue();
-          }
-        );
-      }
-    });
+    addUserToLobby(socket, username);
   });
 });
 
-const joinLobby = () => {};
+async function updateLobby() {
+  clientIds = Object.keys(io.sockets.adapter.rooms["lobby"].sockets);
+  var usernames = [];
 
-const checkQueue = async lobby => {
-  let lobbyObject;
-  let GAME_USERS = 4;
+  clientIds.map(id => {
+    usernames.push(io.sockets.connected[id].username);
+  });
 
-  //Lobby has sometimes already been called so this removes unnesecary database call
-  if (lobby == null) {
-    await Lobby.findOne({ name: "lobby" }).then(lob => {
-      lobbyObject = lob;
+  io.to("lobby").emit("queue", usernames);
+}
+
+async function addUserToLobby(socket, username) {
+  socket.username = username;
+  socket.join("lobby");
+  updateLobby();
+  gameReady();
+}
+
+async function removeUserFromLobby(socket, username) {
+  socket.leave("lobby");
+  socket.disconnect();
+  updateLobby();
+}
+
+async function gameReady() {
+  const clientIds = Object.keys(io.sockets.adapter.rooms["lobby"].sockets);
+
+  if (clientIds.length == 2) {
+    console.log("Server attempting to start game");
+    let game_id = createGameCode();
+    clientIds.map(clientId => {
+      console.log(clientId);
+      io.sockets.sockets[clientId].leave("lobby");
+      io.sockets.sockets[clientId].join(`game_${game_id}`);
     });
-  } else {
-    lobbyObject = lobby;
+
+    //updateLobby();
+    const gamers = Object.keys(
+      io.sockets.adapter.rooms[`game_${game_id}`].sockets
+    );
+    console.log(gamers);
+
+    io.to(`game_${game_id}`).emit("startGame", `game_${game_id}`);
   }
+}
 
-  console.log(lobbyObject);
-
-  io.to("lobby").emit("queue", lobbyObject.queue);
-
-  if (lobbyObject.queue.length >= GAME_USERS) {
-    //Game created with first X users
-    console.log("START A GAME");
-    let game_users = lobbyObject.queue.slice(0, GAME_USERS);
-    createGame(game_users);
-
-    //Remove users from queue
-    await Lobby.updateOne(
-      { name: "lobby" },
-      { $pull: { queue: { $in: game_users } } }
-    ).then(newLob => {
-      console.log(newLob);
-    });
-  }
-};
-
-const createGame = users => {
-  console.log(createGame);
-};
+function createGameCode() {
+  return Math.random()
+    .toString(36)
+    .substring(7);
+}
 
 app.use(router);
 

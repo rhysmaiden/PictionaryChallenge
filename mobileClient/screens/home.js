@@ -6,10 +6,38 @@ export default function Home({ navigation }) {
   return (
     <View style={{ flex: 1, justifyContent: "center" }}>
       <Button
-        text="Lobby"
+        text="Rhys"
         onPress={() => {
           console.log("X");
-          navigation.navigate("Lobby");
+          navigation.navigate("Lobby", { username: "Rhys" });
+        }}
+      />
+      <Button
+        text="Mon"
+        onPress={() => {
+          console.log("X");
+          navigation.navigate("Lobby", { username: "Mon" });
+        }}
+      />
+      <Button
+        text="Ash"
+        onPress={() => {
+          console.log("X");
+          navigation.navigate("Lobby", { username: "Ash" });
+        }}
+      />
+      <Button
+        text="John"
+        onPress={() => {
+          console.log("X");
+          navigation.navigate("Lobby", { username: "John" });
+        }}
+      />
+      <Button
+        text="Lisa"
+        onPress={() => {
+          console.log("X");
+          navigation.navigate("Lobby", { username: "Lisa" });
         }}
       />
     </View>

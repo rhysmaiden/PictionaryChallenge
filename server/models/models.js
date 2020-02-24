@@ -7,7 +7,8 @@ const WordSchema = new Schema({
 });
 
 const UserSchema = new Schema({
-  username: String
+  username: String,
+  socket: String
 });
 
 const CanvasSchema = new Schema({
