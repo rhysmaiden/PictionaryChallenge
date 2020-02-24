@@ -87,6 +87,26 @@ function createGameCode() {
     .substring(7);
 }
 
+function startGame(room) {
+  const clients = io.sockets.adapter.rooms[room].sockets;
+
+  let rounds = new Array(clients.length * 3);
+
+  let pairs = [];
+
+  for (var i = 0; i < clients.length; i++) {
+    for (var j = 0; j < clients.length; j++) {
+      if (i == j) {
+        continue;
+      }
+
+      let pair = { artist: clients[i], guesser: clients[j] };
+    }
+  }
+}
+
+function startRound() {}
+
 app.use(router);
 
 server.listen(PORT, () => {
