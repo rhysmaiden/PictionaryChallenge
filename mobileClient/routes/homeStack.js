@@ -3,6 +3,7 @@ import { createAppContainer } from "react-navigation";
 
 import Lobby from "../screens/lobby.js";
 import Home from "../screens/home.js";
+import Artist from "../screens/artist.js";
 
 const screens = {
   Home: {
@@ -10,6 +11,9 @@ const screens = {
   },
   Lobby: {
     screen: Lobby
+  },
+  Artist: {
+    screen: Artist
   }
 };
 

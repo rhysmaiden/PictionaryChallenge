@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, ScrollView, StyleSheet, Text } from "react-native";
 import io from "socket.io-client";
 import Constants from "expo-constants";
+import Button from "../components/primaryButton.js";
+
 const { manifest } = Constants;
 
 let socket;
@@ -60,6 +62,12 @@ export default function Lobby({ route, navigation }) {
       {users.map(user => (
         <Text>{user}</Text>
       ))}
+      <Button
+        text="DRAW"
+        onPress={() => {
+          navigation.navigate("Artist");
+        }}
+      />
     </View>
   );
 }
