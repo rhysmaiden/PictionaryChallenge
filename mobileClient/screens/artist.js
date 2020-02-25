@@ -84,31 +84,9 @@ export default class artist extends Component {
   }
 
   onChangeAsync = async () => {
-    // const { uri } = await this.sketch.takeSnapshotAsync({ result: "base64" });
-
-    // const options = {
-    //   format: "png", /// PNG because the view has a clear background
-    //   quality: 0.1, /// Low quality works because it's just a line
-    //   result: "base64"
-    // };
-
-    // for (let line of this.sketch.lines) {
-    //   console.log(line.points);
-    // }
-
-    //console.log(Expo.takeSnapshotAsync(this.sketch, options));
-
-    // console.log(await this.sketch.takeSnapshotAsync({ result: "base64" }));
-
     //TODO: Make the socket apart of this components state
     let socket = this.props.navigation.getParam("socket");
     let username = this.props.navigation.getParam("username");
-
-    const options = {
-      format: "png", /// PNG because the view has a clear background
-      quality: 0.1, /// Low quality works because it's just a line
-      result: "base64"
-    };
 
     var lines = [];
 
@@ -116,62 +94,14 @@ export default class artist extends Component {
       var points = [];
 
       for (let point of line.points) {
-        console.log("X");
         points.push({ x: point.x, y: point.y });
       }
 
       lines.push(points);
     }
 
-    console.log(lines.length);
-
-    // console.log(Object.keys(this.sketch.points[0].x));
-    // console.log(this.sketch.points[0].x);
-    /// Using 'Expo.takeSnapShotAsync', and our view 'this.sketch' we can get a uri of the image
-    //const uri = await Expo.takeSnapshotAsync(this.sketch, options);
-
-    // const lines = this.sketch.lines;
-
-    // console.log(JSON.stringify(lines));
-
     socket.emit("picture", { picture: lines, username: username }, callback => {
       console.log("Sent picture");
-    });
-
-    // console.log(uri);
-    // console.log(typeof uri);
-
-    // RNFetchBlob.fs.readFile(await localUri, "base64").then(data => {
-    //   console.log(data);
-    // });
-
-    // const fileReader = new FileReader();
-    // fileReader.onload = fileLoadedEvent => {
-    //   const base64Image = fileLoadedEvent.target.result;
-    // };
-    // const result = fileReader.readAsDataURL(uri);
-
-    // console.log(result);
-
-    // RNFS.readFile(uri, "base64").then(res => {
-    //   console.log(res);
-    // });
-
-    // ImgToBase64.getBase64String(localUri).then(img_base64 => {
-    //   console.log(img_base64);
-    //   socket.emit(
-    //     "picture",
-    //     { picture: img_base64, username: username },
-    //     callback => {
-    //       console.log("Sent picture");
-    //     }
-    //   );
-    // });
-
-    this.setState({
-      image: { uri },
-      strokeWidth: Math.random() * 30 + 10,
-      strokeColor: Math.random() * 0xffffff
     });
   };
 

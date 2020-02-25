@@ -45,10 +45,38 @@ export default class guesser extends Component {
     lines: [
       {
         points: [
-          { x: 300, y: 300 },
-          { x: 600, y: 300 },
-          { x: 450, y: 600 },
-          { x: 300, y: 300 }
+          { x: 477.99998474121094, y: 312.99998474121094 },
+          { x: 477.39998016357424, y: 316.89998016357424 },
+          { x: 476.9799769592285, y: 329.5299769592285 },
+          { x: 476.68597471618654, y: 344.97098387145996 },
+          { x: 476.48017314605715, y: 363.5796795547485 },
+          { x: 476.33611204696655, y: 385.005775688324 },
+          { x: 477.4352784328766, y: 408.4040384041901 },
+          { x: 479.4046903253769, y: 432.2828177276596 },
+          { x: 482.28328322776383, y: 456.49797240936175 },
+          { x: 486.09829825943467, y: 478.84858068655325 },
+          { x: 491.46880878160425, y: 500.19400190295056 },
+          { x: 498.828166147123, y: 520.5357967544287 },
+          { x: 509.67971172534936, y: 540.1750531504633 },
+          { x: 523.5757936301078, y: 558.1225372053243 },
+          { x: 539.903046385802, y: 574.285776043727 },
+          { x: 556.7321233147879, y: 588.0000340753354 },
+          { x: 574.8124771650781, y: 599.4000146974613 },
+          { x: 593.468729437918, y: 608.2800011329495 },
+          { x: 612.2281014512691, y: 615.0959962154279 },
+          { x: 632.5596618606149, y: 620.1671881955261 },
+          { x: 653.3917633024305, y: 623.7170225815948 },
+          { x: 674.2742343117013, y: 625.0019112294797 },
+          { x: 694.5919594405542, y: 621.7013287053624 },
+          { x: 714.814371608388, y: 613.690925516117 },
+          { x: 735.2700601258716, y: 599.0836432836452 },
+          { x: 754.3890375104734, y: 579.2585411432782 },
+          { x: 771.9723262573314, y: 553.9809788002947 },
+          { x: 787.5806192248585, y: 524.5866851602062 },
+          { x: 800.3064243021275, y: 489.3106704568709 },
+          { x: 810.1144878562159, y: 454.11746931980963 },
+          { x: 816.9801323440777, y: 413.8822193685933 },
+          { x: 828.9999847412109, y: 267 }
         ],
         color: 0xff00ff,
         alpha: 1,
@@ -69,6 +97,7 @@ export default class guesser extends Component {
           id: uuidv4(),
           lines: this.sketch.lines
         });
+        //console.log("UPDATED LINES");
         return;
       }
     }
@@ -77,113 +106,11 @@ export default class guesser extends Component {
 
   componentDidMount() {
     AppState.addEventListener("change", this.handleAppStateChangeAsync);
-  }
 
-  componentWillUnmount() {
-    AppState.removeEventListener("change", this.handleAppStateChangeAsync);
-  }
-
-  onChangeAsync = async () => {
-    // const { uri } = await this.sketch.takeSnapshotAsync({ result: "base64" });
-
-    // const options = {
-    //   format: "png", /// PNG because the view has a clear background
-    //   quality: 0.1, /// Low quality works because it's just a line
-    //   result: "base64"
-    // };
-
-    // for (let line of this.sketch.lines) {
-    //   console.log(line.points);
-    // }
-
-    //console.log(Expo.takeSnapshotAsync(this.sketch, options));
-
-    // console.log(await this.sketch.takeSnapshotAsync({ result: "base64" }));
-
-    //TODO: Make the socket apart of this components state
-    let socket = this.props.navigation.getParam("socket");
-    let username = this.props.navigation.getParam("username");
-
-    const options = {
-      format: "png", /// PNG because the view has a clear background
-      quality: 0.1, /// Low quality works because it's just a line
-      result: "base64"
-    };
-
-    var lines = [];
-
-    for (let line of this.sketch.lines) {
-      var points = [];
-
-      for (let point of line.points) {
-        console.log("X");
-        points.push({ x: point.x, y: point.y });
-      }
-
-      lines.push(points);
-    }
-
-    console.log(lines.length);
-
-    // console.log(Object.keys(this.sketch.points[0].x));
-    // console.log(this.sketch.points[0].x);
-    /// Using 'Expo.takeSnapShotAsync', and our view 'this.sketch' we can get a uri of the image
-    //const uri = await Expo.takeSnapshotAsync(this.sketch, options);
-
-    // const lines = this.sketch.lines;
-
-    // console.log(JSON.stringify(lines));
-
-    socket.emit("picture", { picture: lines, username: username }, callback => {
-      console.log("Sent picture");
-    });
-
-    // console.log(uri);
-    // console.log(typeof uri);
-
-    // RNFetchBlob.fs.readFile(await localUri, "base64").then(data => {
-    //   console.log(data);
-    // });
-
-    // const fileReader = new FileReader();
-    // fileReader.onload = fileLoadedEvent => {
-    //   const base64Image = fileLoadedEvent.target.result;
-    // };
-    // const result = fileReader.readAsDataURL(uri);
-
-    // console.log(result);
-
-    // RNFS.readFile(uri, "base64").then(res => {
-    //   console.log(res);
-    // });
-
-    // ImgToBase64.getBase64String(localUri).then(img_base64 => {
-    //   console.log(img_base64);
-    //   socket.emit(
-    //     "picture",
-    //     { picture: img_base64, username: username },
-    //     callback => {
-    //       console.log("Sent picture");
-    //     }
-    //   );
-    // });
-
-    this.setState({
-      image: { uri },
-      strokeWidth: Math.random() * 30 + 10,
-      strokeColor: Math.random() * 0xffffff
-    });
-  };
-
-  onReady = async () => {
-    console.log("ready!");
     let socket = this.props.navigation.getParam("socket");
 
     socket.on("picture", picture => {
       console.log("RECIEVED PICTURE");
-
-      console.log(typeof picture);
-      // console.log(picture);
 
       var lines = [];
 
@@ -193,28 +120,47 @@ export default class guesser extends Component {
           points.push({ x: pt.x, y: pt.y });
         }
 
-        var line = { points: points };
-        console.log(line);
+        var line = { points: points, color: 0xff00ff, alpha: 1, width: 10 };
+        lines.push(line);
       }
 
-      //   lines: [
-      //     {
-      //       points: [
-      //         { x: 300, y: 300 },
-      //         { x: 600, y: 300 },
-      //         { x: 450, y: 600 },
-      //         { x: 300, y: 300 }
-      //       ],
-      //       color: 0xff00ff,
-      //       alpha: 1,
-      //       width: 10
-      //     }
-      //   ],
-      //     this.setState({
-      //       lines: [picture]
-      //     });
-      //console.log(game_id);
+      //   console.log("#####111111######");
+      //   console.log({ lines: lines });
+
+      let test_obj = {
+        lines: [
+          {
+            points: [
+              { x: 300.2324353, y: 300 },
+              { x: 600, y: 300 },
+              { x: 450, y: 600 },
+              { x: 300, y: 300 }
+            ],
+            color: 0xff00ff,
+            alpha: 1,
+            width: 10
+          }
+        ]
+      };
+
+      this.setState({ lines: lines });
+
+      //   console.log("#####22222######");
+      //   console.log(test_obj);
+
+      console.log("#####33333######");
+      console.log(this.state.lines);
     });
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener("change", this.handleAppStateChangeAsync);
+  }
+
+  onChangeAsync = async () => {};
+
+  onReady = async () => {
+    console.log("ready!");
   };
 
   render() {
@@ -232,15 +178,10 @@ export default class guesser extends Component {
               onReady={this.onReady}
               initialLines={this.state.lines}
             />
+
             <View style={styles.label}>
               <Text>Canvas - draw here</Text>
             </View>
-          </View>
-          <View style={styles.imageContainer}>
-            <View style={styles.label}>
-              <Text>Snapshot</Text>
-            </View>
-            <Image style={styles.image} source={this.state.image} />
           </View>
         </View>
         <Button
