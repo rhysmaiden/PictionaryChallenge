@@ -65,7 +65,16 @@ export default function Lobby({ route, navigation }) {
       <Button
         text="DRAW"
         onPress={() => {
-          navigation.navigate("Artist");
+          navigation.navigate("Artist", { socket: socket, username: username });
+        }}
+      />
+      <Button
+        text="GUESSER"
+        onPress={() => {
+          navigation.navigate("Guesser", {
+            socket: socket,
+            username: username
+          });
         }}
       />
     </View>
