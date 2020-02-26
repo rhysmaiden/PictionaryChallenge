@@ -94,6 +94,7 @@ export default class artist extends Component {
       var points = [];
 
       for (let point of line.points) {
+        //console.log(point);
         points.push({ x: point.x, y: point.y });
       }
 
