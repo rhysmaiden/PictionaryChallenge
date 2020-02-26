@@ -1,12 +1,10 @@
 import Expo from "expo";
 import * as ExpoPixi from "expo-pixi";
 import React, { Component, useEffect } from "react";
-// import RNFetchBlob from "react-native-fetch-blob";
-// import RNFS from "react-native-fs";
 import ImgToBase64 from "react-native-image-base64";
+import Button from "../components/primaryButton.js";
 import {
   Image,
-  Button,
   Platform,
   AppState,
   StyleSheet,
@@ -40,16 +38,12 @@ const getCircularReplacer = () => {
 export default class guesser extends Component {
   state = {
     image: null,
+    options: [],
     strokeColor: Math.random() * 0xffffff,
     strokeWidth: Math.random() * 30 + 10,
     lines: [
       {
-        points: [
-          { x: 300, y: 300 },
-          { x: 600, y: 300 },
-          { x: 450, y: 600 },
-          { x: 300, y: 300 }
-        ],
+        points: [],
         color: 0xff00ff,
         alpha: 1,
         width: 10
@@ -82,8 +76,7 @@ export default class guesser extends Component {
     let socket = this.props.navigation.getParam("socket");
 
     socket.on("picture", picture => {
-      console.log("RECIEVED PICTURE");
-
+      console.log("PITCURE RECIEVED");
       var lines = [];
 
       for (let x of picture) {
@@ -96,51 +89,14 @@ export default class guesser extends Component {
         lines.push(line);
       }
 
-      //   console.log("#####111111######");
-      //   console.log({ lines: lines });
-
-      let test_obj = {
-        lines: [
-          {
-            points: [
-              { x: 300.2324353, y: 300 },
-              { x: 600, y: 300 },
-              { x: 450, y: 600 },
-              { x: 300, y: 300 }
-            ],
-            color: 0xff00ff,
-            alpha: 1,
-            width: 10
-          }
-        ]
-      };
-
       this.setState({
         lines: lines
       });
+    });
 
-      //   this.setState({
-      //     lines: [
-      //       {
-      //         points: [
-      //           { x: 918, y: 672.9999847412109 },
-      //           { x: 918, y: 672.9999847412109 },
-      //           { x: 918, y: 672.9999847412109 },
-      //           { x: 915.3, y: 650.7999801635742 },
-      //           { x: 912.2099908447266, y: 619.6599815368652 },
-      //           { x: 895.9999694824219, y: 483.99998474121094 }
-      //         ],
-      //         color: 0xff00ff,
-      //         alpha: 1,
-      //         width: 10
-      //       }
-      //     ]
-      //   });
-
-      //   console.log("#####22222######");
-      //   console.log(test_obj);
-
-      //   console.log("#####33333######");
+    socket.on("options", options => {
+      console.log("RECUEVED OPTIONS");
+      this.setState({ options: options });
     });
   }
 
@@ -175,14 +131,16 @@ export default class guesser extends Component {
             </View>
           </View>
         </View>
-        <Button
-          color={"blue"}
-          title="undo"
-          style={styles.button}
-          onPress={() => {
-            this.sketch.undo();
-          }}
-        />
+        <View style={styles.options}>
+          {this.state.options.map((option, index) => (
+            <Button
+              text={option}
+              onPress={() => {
+                this.selectOption(index);
+              }}
+            />
+          ))}
+        </View>
       </View>
     );
   }
@@ -196,7 +154,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sketchContainer: {
-    height: "50%"
+    height: "50%",
+    backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 10
   },
   image: {
     flex: 1

@@ -22,7 +22,7 @@ const screens = {
 };
 
 const HomeStack = createStackNavigator(screens, {
-  mode: "modal"
+  mode: "card"
 });
 
 export default createAppContainer(HomeStack);

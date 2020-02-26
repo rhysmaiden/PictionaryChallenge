@@ -44,12 +44,7 @@ export default class artist extends Component {
     strokeWidth: Math.random() * 30 + 10,
     lines: [
       {
-        points: [
-          { x: 300, y: 300 },
-          { x: 600, y: 300 },
-          { x: 450, y: 600 },
-          { x: 300, y: 300 }
-        ],
+        points: [],
         color: 0xff00ff,
         alpha: 1,
         width: 10
@@ -157,7 +152,10 @@ const styles = StyleSheet.create({
     flex: 1
   },
   sketchContainer: {
-    height: "50%"
+    height: "50%",
+    backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 10
   },
   image: {
     flex: 1
