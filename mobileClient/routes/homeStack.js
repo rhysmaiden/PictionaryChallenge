@@ -5,6 +5,7 @@ import Lobby from "../screens/lobby.js";
 import Home from "../screens/home.js";
 import Artist from "../screens/artist.js";
 import Guesser from "../screens/guesser.js";
+import Game from "../screens/game.js";
 
 const screens = {
   Home: {
@@ -18,6 +19,9 @@ const screens = {
   },
   Guesser: {
     screen: Guesser
+  },
+  Game: {
+    screen: Game
   }
 };
 

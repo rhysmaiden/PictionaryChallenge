@@ -73,7 +73,7 @@ export default class guesser extends Component {
   componentDidMount() {
     AppState.addEventListener("change", this.handleAppStateChangeAsync);
 
-    let socket = this.props.navigation.getParam("socket");
+    let socket = this.props.socket;
 
     socket.on("picture", picture => {
       console.log("PITCURE RECIEVED");
@@ -113,6 +113,7 @@ export default class guesser extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text>Guesser</Text>
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch

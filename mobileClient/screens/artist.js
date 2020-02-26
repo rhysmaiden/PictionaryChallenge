@@ -80,8 +80,8 @@ export default class artist extends Component {
 
   onChangeAsync = async () => {
     //TODO: Make the socket apart of this components state
-    let socket = this.props.navigation.getParam("socket");
-    let username = this.props.navigation.getParam("username");
+    let socket = this.props.socket;
+    // let username = this.props.navigation.getParam("username");
 
     var lines = [];
 
@@ -96,7 +96,7 @@ export default class artist extends Component {
       lines.push(points);
     }
 
-    socket.emit("picture", { picture: lines, username: username }, callback => {
+    socket.emit("picture", { picture: lines, username: "X" }, callback => {
       console.log("Sent picture");
     });
   };
@@ -108,6 +108,7 @@ export default class artist extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text>Artist</Text>
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch

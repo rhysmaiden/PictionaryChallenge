@@ -81,7 +81,9 @@ async function gameReady() {
     );
     console.log(gamers);
 
-    io.to(`game_${game_id}`).emit("startGame", `game_${game_id}`);
+    io.in(`game_${game_id}`).emit("startGame", `game_${game_id}`);
+
+    startGame(`game_${game_id}`, gamers);
   }
 }
 
@@ -91,25 +93,20 @@ function createGameCode() {
     .substring(7);
 }
 
-function startGame(room) {
-  const clients = io.sockets.adapter.rooms[room].sockets;
-
-  let rounds = new Array(clients.length * 3);
-
-  let pairs = [];
-
-  for (var i = 0; i < clients.length; i++) {
-    for (var j = 0; j < clients.length; j++) {
-      if (i == j) {
-        continue;
-      }
-
-      let pair = { artist: clients[i], guesser: clients[j] };
-    }
-  }
+function startGame(room_id, clients) {
+  startRound(clients, room_id);
 }
 
-function startRound() {}
+function startRound(clients, room_id) {
+  console.log("START ROUND");
+  console.log(clients[0]);
+
+  setTimeout(function() {
+    console.log("TRIGGER");
+    io.to(clients[0]).emit("changeScreen", 1);
+    io.to(clients[1]).emit("changeScreen", 2);
+  }, 5000);
+}
 
 app.use(router);
 

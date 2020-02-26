@@ -53,6 +53,7 @@ export default function Lobby({ route, navigation }) {
     socket.on("startGame", game_id => {
       console.log("START GAME");
       console.log(game_id);
+      navigation.navigate("Game", { socket: socket, username: username });
     });
   }, []);
 
@@ -62,6 +63,12 @@ export default function Lobby({ route, navigation }) {
       {users.map(user => (
         <Text>{user}</Text>
       ))}
+      <Button
+        text="GAME"
+        onPress={() => {
+          navigation.navigate("Game", { socket: socket, username: username });
+        }}
+      />
       <Button
         text="DRAW"
         onPress={() => {

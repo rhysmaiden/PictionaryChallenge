@@ -4,6 +4,8 @@ import io from "socket.io-client";
 import Constants from "expo-constants";
 import Button from "../components/primaryButton.js";
 import Guesser from "./guesser.js";
+import Artist from "./artist.js";
+import RoundIntro from "./roundIntro.js";
 
 const { manifest } = Constants;
 
@@ -15,21 +17,23 @@ export default function Game({ route, navigation }) {
   /* ****************************
             SOCKET
   *****************************/
-  useEffect(() => {}, [
+  useEffect(() => {
+    socket = navigation.getParam("socket");
     socket.on("changeScreen", screenNumber => {
-        setActiveScreen(screenNumber);
-      });
-  ]);
+      console.log("Recieved change Screen request");
+      setActiveScreen(screenNumber);
+    });
+  }, []);
 
   function selectScreen(index) {
     switch (index) {
-      case "0":
-        return <Guesser />;
-      case "1":
-        return <Guesser />;
-      case "2":
-        return <Guesser />;
-      case "3":
+      case 0:
+        return <RoundIntro />;
+      case 1:
+        return <Artist socket={socket} />;
+      case 2:
+        return <Guesser socket={socket} />;
+      case 3:
         return <Guesser />;
       default:
         return <Guesser />;
