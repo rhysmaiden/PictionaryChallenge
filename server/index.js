@@ -35,18 +35,7 @@ io.on("connection", async socket => {
   });
 
   socket.on("picture", async ({ username, picture }, callback) => {
-    console.log(username, picture);
-    console.log(typeof picture);
-
-    //TODO: Find this users corresponding guesser
-    //TODO: Send guesser the picture
-
     socket.broadcast.emit("picture", picture);
-    //socket.broadcast.emit("options", ["1", "2", "3"]);
-
-    // console.log(game_id);
-    // io.to(`game_${game_id}`).emit("picture", picture);
-    // socket.rooms
   });
 });
 
