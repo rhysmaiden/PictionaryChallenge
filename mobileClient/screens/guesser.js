@@ -93,14 +93,25 @@ export default class guesser extends Component {
         lines: lines
       });
     });
+
+    socket.on("evaluation", ({ correct, answer }) => {
+      console.log("Guesser recieved evaluation");
+      // console.log("Guesser recieved evaluation", correct, answer);
+      if (correct) {
+        this.setState({ correct: "CORRECT" });
+      } else {
+        this.setState({ correct: "INCORRECT" });
+      }
+    });
   }
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this.handleAppStateChangeAsync);
   }
 
-  selectOption(word) {
-    socket.emit("answer", { word }, callback => {
+  selectOption(answer) {
+    let socket = this.props.socket;
+    socket.emit("answer", { answer }, callback => {
       console.log("Sent guess");
     });
   }
@@ -115,6 +126,7 @@ export default class guesser extends Component {
     return (
       <View style={styles.container}>
         <Text>Guesser</Text>
+        <Text>{this.state.correct && this.state.correct}</Text>
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch
@@ -133,6 +145,7 @@ export default class guesser extends Component {
             </View>
           </View>
         </View>
+
         <View style={styles.options}>
           {this.props.choices.map(option => (
             <Button

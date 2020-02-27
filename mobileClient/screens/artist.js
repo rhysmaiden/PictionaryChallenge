@@ -72,6 +72,14 @@ export default class artist extends Component {
 
   componentDidMount() {
     AppState.addEventListener("change", this.handleAppStateChangeAsync);
+    let socket = this.props.socket;
+    socket.on("evaluation", ({ correct, answer }) => {
+      console.log("Artist recieved evaluation");
+      // console.log("Artist recieved evaluation", correct, answer);
+      this.setState({
+        answer: answer
+      });
+    });
   }
 
   componentWillUnmount() {
@@ -80,7 +88,7 @@ export default class artist extends Component {
 
   onChangeAsync = async () => {
     //TODO: Make the socket apart of this components state
-    let socket = this.props.socket;
+
     // let username = this.props.navigation.getParam("username");
 
     var lines = [];
@@ -95,6 +103,8 @@ export default class artist extends Component {
 
       lines.push(points);
     }
+
+    let socket = this.props.socket;
 
     socket.emit("picture", { picture: lines, username: "X" }, callback => {
       console.log("Sent picture");
@@ -141,6 +151,7 @@ export default class artist extends Component {
             this.sketch.undo();
           }}
         />
+        <Text>{this.state.answer && this.state.answer}</Text>
       </View>
     );
   }

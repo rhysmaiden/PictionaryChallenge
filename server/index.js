@@ -23,6 +23,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
+let game_rooms = [];
+
 //SOCKETS
 io.on("connection", async socket => {
   console.log("New connection");
@@ -37,6 +39,28 @@ io.on("connection", async socket => {
 
   socket.on("picture", async ({ username, picture }, callback) => {
     socket.broadcast.emit("picture", picture);
+  });
+
+  socket.on("answer", async ({ answer }, callback) => {
+    console.log(answer);
+
+    const round = getRound(socket);
+    const correct = isAnswerCorrect(round, answer);
+    const partner_socket = getPartnerSocket(socket, round);
+
+    if (correct) {
+      io.to(socket.id).emit("evaluation", { correct: correct });
+    } else {
+      io.to(socket.id).emit("evaluation", {
+        correct: correct,
+        answer: round.correctWord
+      });
+    }
+
+    io.to(partner_socket).emit("evaluation", {
+      correct: correct,
+      answer: answer
+    });
   });
 });
 
@@ -94,18 +118,43 @@ function createGameCode() {
     .substring(7);
 }
 
+function getRound(socket) {
+  //TODO: The user might not be leaving the lobby and has two rooms for some reason
+  let user_rooms = Object.keys(socket.rooms);
+  let room_id = user_rooms[user_rooms.length - 1];
+  let game_room = game_rooms.find(({ id }) => id === room_id);
+  let currentRound = game_room.rounds[game_room.rounds.length - 1];
+  return currentRound;
+}
+
+function getPartnerSocket(socket, round) {
+  let partner = round.partners.find(({ guesser }) => guesser === socket.id)
+    .artist;
+
+  return partner;
+}
+
+function isAnswerCorrect(round, answer) {
+  return round.correctWord === answer;
+}
+
 function startGame(room_id, clients) {
   startRound(clients, room_id);
+  game_rooms.push({ id: room_id, rounds: [] });
 }
 
 function startRound(clients, room_id) {
   console.log("START ROUND");
-  console.log(clients[0]);
+
+  var partners = [];
+  partners.push({ artist: clients[0], guesser: clients[1] });
 
   setTimeout(function() {
-    console.log("TRIGGER");
-
     words = getWords();
+    const correctWord = words[0];
+    let game_room = game_rooms.find(({ id }) => id === room_id);
+    let round = { partners: partners, words: words, correctWord: correctWord };
+    game_room.rounds.push(round);
 
     io.to(clients[0]).emit("artistInformation", words[0]);
 
@@ -120,7 +169,7 @@ function startRound(clients, room_id) {
 
     io.to(clients[0]).emit("changeScreen", 1);
     io.to(clients[1]).emit("changeScreen", 2);
-  }, 5000);
+  }, 2000);
 }
 
 function getWords() {
