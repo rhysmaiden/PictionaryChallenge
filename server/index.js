@@ -3,6 +3,7 @@ const socketio = require("socket.io");
 const http = require("http");
 const { mongoose } = require("./connection.js");
 const ObjectId = require("mongodb").ObjectID;
+const fs = require("fs");
 const {
   Game,
   Round,
@@ -103,9 +104,64 @@ function startRound(clients, room_id) {
 
   setTimeout(function() {
     console.log("TRIGGER");
+
+    words = getWords();
+
+    io.to(clients[0]).emit("artistInformation", words[0]);
+
+    shuffle(words);
+    io.to(clients[1]).emit("guesserInformation", words);
+
+    //WAIT ONE SECOND TO MAKE SURE USERS HAVE THE INFORMATION
+    setTimeout(function() {
+      io.to(clients[0]).emit("changeScreen", 1);
+      io.to(clients[1]).emit("changeScreen", 2);
+    }, 1000);
+
     io.to(clients[0]).emit("changeScreen", 1);
     io.to(clients[1]).emit("changeScreen", 2);
   }, 5000);
+}
+
+function getWords() {
+  let words = [];
+  let text = fs.readFileSync("words.txt", "utf8");
+
+  words = text.toString().split("\n");
+
+  let chosenWords = [];
+
+  for (var i = 0; i < 4; i++) {
+    let index = Math.floor(Math.random() * 100);
+
+    if (!chosenWords.includes(words[index])) {
+      chosenWords.push(words[index]);
+    } else {
+      i--;
+    }
+  }
+
+  return chosenWords;
+}
+
+function shuffle(array) {
+  var currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 app.use(router);

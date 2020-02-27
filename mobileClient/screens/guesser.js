@@ -93,15 +93,16 @@ export default class guesser extends Component {
         lines: lines
       });
     });
-
-    socket.on("options", options => {
-      console.log("RECUEVED OPTIONS");
-      this.setState({ options: options });
-    });
   }
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this.handleAppStateChangeAsync);
+  }
+
+  selectOption(word) {
+    socket.emit("answer", { word }, callback => {
+      console.log("Sent guess");
+    });
   }
 
   onChangeAsync = async () => {};
@@ -133,11 +134,11 @@ export default class guesser extends Component {
           </View>
         </View>
         <View style={styles.options}>
-          {this.state.options.map((option, index) => (
+          {this.props.choices.map(option => (
             <Button
               text={option}
               onPress={() => {
-                this.selectOption(index);
+                this.selectOption(option);
               }}
             />
           ))}

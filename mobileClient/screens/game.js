@@ -13,6 +13,8 @@ let socket;
 
 export default function Game({ route, navigation }) {
   const [activeScreen, setActiveScreen] = useState(0);
+  const [artistWord, setArtistWord] = useState("");
+  const [guesserChoices, setGuesserChoices] = useState([]);
 
   /* ****************************
             SOCKET
@@ -23,6 +25,14 @@ export default function Game({ route, navigation }) {
       console.log("Recieved change Screen request");
       setActiveScreen(screenNumber);
     });
+
+    socket.on("guesserInformation", words => {
+      setGuesserChoices(words);
+    });
+
+    socket.on("artistInformation", word => {
+      setArtistWord(word);
+    });
   }, []);
 
   function selectScreen(index) {
@@ -30,9 +40,9 @@ export default function Game({ route, navigation }) {
       case 0:
         return <RoundIntro />;
       case 1:
-        return <Artist socket={socket} />;
+        return <Artist socket={socket} word={artistWord} />;
       case 2:
-        return <Guesser socket={socket} />;
+        return <Guesser socket={socket} choices={guesserChoices} />;
       case 3:
         return <Guesser />;
       default:

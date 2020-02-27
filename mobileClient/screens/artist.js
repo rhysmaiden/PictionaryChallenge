@@ -109,6 +109,7 @@ export default class artist extends Component {
     return (
       <View style={styles.container}>
         <Text>Artist</Text>
+        <Text>{this.props.word}</Text>
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch
