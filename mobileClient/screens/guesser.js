@@ -75,34 +75,34 @@ export default class guesser extends Component {
 
     let socket = this.props.socket;
 
-    socket.on("picture", picture => {
-      console.log("PITCURE RECIEVED");
-      var lines = [];
+    // socket.on("picture", picture => {
+    //   console.log("PITCURE RECIEVED");
+    //   var lines = [];
 
-      for (let x of picture) {
-        var points = [];
-        for (let pt of x) {
-          points.push({ x: pt.x, y: pt.y });
-        }
+    //   for (let x of picture) {
+    //     var points = [];
+    //     for (let pt of x) {
+    //       points.push({ x: pt.x, y: pt.y });
+    //     }
 
-        var line = { points: points, color: 0xff00ff, alpha: 1, width: 10 };
-        lines.push(line);
-      }
+    //     var line = { points: points, color: 0xff00ff, alpha: 1, width: 10 };
+    //     lines.push(line);
+    //   }
 
-      this.setState({
-        lines: lines
-      });
-    });
+    //   this.setState({
+    //     lines: lines
+    //   });
+    // });
 
-    socket.on("evaluation", ({ correct, answer }) => {
-      console.log("Guesser recieved evaluation");
-      // console.log("Guesser recieved evaluation", correct, answer);
-      if (correct) {
-        this.setState({ correct: "CORRECT" });
-      } else {
-        this.setState({ correct: "INCORRECT" });
-      }
-    });
+    // socket.on("evaluation", ({ correct, answer }) => {
+    //   console.log("Guesser recieved evaluation");
+    //   // console.log("Guesser recieved evaluation", correct, answer);
+    //   if (correct) {
+    //     this.setState({ correct: "CORRECT" });
+    //   } else {
+    //     this.setState({ correct: "INCORRECT" });
+    //   }
+    // });
   }
 
   componentWillUnmount() {
@@ -122,12 +122,17 @@ export default class guesser extends Component {
     console.log("ready!");
   };
 
+  //TODO: Remove ability for guesser to draw
   render() {
     return (
       <View style={styles.container}>
-        <Text>Guesser</Text>
-        <Text>{this.state.correct && this.state.correct}</Text>
+        {/* <Text>{this.state.correct && this.state.correct}</Text> */}
         <View style={styles.container}>
+          <View style={styles.header}>
+            <Text>Round 1</Text>
+            {/* <Text style={styles.word}>{this.props.word}</Text> */}
+            <Text style={styles.word}>TURTLE</Text>
+          </View>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch
               ref={ref => (this.sketch = ref)}
@@ -139,22 +144,21 @@ export default class guesser extends Component {
               onReady={this.onReady}
               initialLines={this.state.lines}
             />
-
-            <View style={styles.label}>
-              <Text>Canvas - draw here</Text>
-            </View>
           </View>
-        </View>
-
-        <View style={styles.options}>
-          {this.props.choices.map(option => (
+          <View style={styles.options}>
+            {/* {this.props.choices.map(option => (
             <Button
               text={option}
               onPress={() => {
                 this.selectOption(option);
               }}
             />
-          ))}
+          ))} */}
+            <Button text="Option 1" />
+            <Button text="Option 1" />
+            <Button text="Option 1" />
+            <Button text="Option 1" />
+          </View>
         </View>
       </View>
     );
@@ -163,16 +167,17 @@ export default class guesser extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent: "flex-start"
   },
   sketch: {
     flex: 1
   },
   sketchContainer: {
-    height: "50%",
+    height: 300,
     backgroundColor: "white",
     borderColor: "black",
-    borderWidth: 10
+    borderWidth: 5
   },
   image: {
     flex: 1
@@ -195,5 +200,15 @@ const styles = StyleSheet.create({
     padding: 12,
     minWidth: 56,
     minHeight: 48
+  },
+  word: {
+    fontSize: 30
+  },
+  header: {
+    alignItems: "center",
+    padding: 15
+  },
+  options: {
+    padding: 10
   }
 });

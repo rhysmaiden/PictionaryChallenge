@@ -73,13 +73,13 @@ export default class artist extends Component {
   componentDidMount() {
     AppState.addEventListener("change", this.handleAppStateChangeAsync);
     let socket = this.props.socket;
-    socket.on("evaluation", ({ correct, answer }) => {
-      console.log("Artist recieved evaluation");
-      // console.log("Artist recieved evaluation", correct, answer);
-      this.setState({
-        answer: answer
-      });
-    });
+    // socket.on("evaluation", ({ correct, answer }) => {
+    //   console.log("Artist recieved evaluation");
+    //   // console.log("Artist recieved evaluation", correct, answer);
+    //   this.setState({
+    //     answer: answer
+    //   });
+    // });
   }
 
   componentWillUnmount() {
@@ -88,8 +88,6 @@ export default class artist extends Component {
 
   onChangeAsync = async () => {
     //TODO: Make the socket apart of this components state
-
-    // let username = this.props.navigation.getParam("username");
 
     var lines = [];
 
@@ -118,7 +116,12 @@ export default class artist extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Artist</Text>
+        <View style={styles.header}>
+          <Text>Round 1</Text>
+          {/* <Text style={styles.word}>{this.props.word}</Text> */}
+          <Text style={styles.word}>TURTLE</Text>
+        </View>
+
         <Text>{this.props.word}</Text>
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
@@ -132,18 +135,12 @@ export default class artist extends Component {
               onReady={this.onReady}
               initialLines={this.state.lines}
             />
-            <View style={styles.label}>
-              <Text>Canvas - draw here</Text>
-            </View>
-          </View>
-          <View style={styles.imageContainer}>
-            <View style={styles.label}>
-              <Text>Snapshot</Text>
-            </View>
-            <Image style={styles.image} source={this.state.image} />
+            {/* <View style={styles.label}>
+              <Text>Artboard</Text>
+            </View> */}
           </View>
         </View>
-        <Button
+        {/* <Button
           color={"blue"}
           title="undo"
           style={styles.button}
@@ -151,7 +148,7 @@ export default class artist extends Component {
             this.sketch.undo();
           }}
         />
-        <Text>{this.state.answer && this.state.answer}</Text>
+        <Text>{this.state.answer && this.state.answer}</Text> */}
       </View>
     );
   }
@@ -159,16 +156,17 @@ export default class artist extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    justifyContent: "flex-start"
   },
   sketch: {
     flex: 1
   },
   sketchContainer: {
-    height: "50%",
+    height: 300,
     backgroundColor: "white",
     borderColor: "black",
-    borderWidth: 10
+    borderWidth: 5
   },
   image: {
     flex: 1
@@ -191,5 +189,12 @@ const styles = StyleSheet.create({
     padding: 12,
     minWidth: 56,
     minHeight: 48
+  },
+  word: {
+    fontSize: 30
+  },
+  header: {
+    alignItems: "center",
+    padding: 15
   }
 });
