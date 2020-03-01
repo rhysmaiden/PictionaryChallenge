@@ -52,6 +52,7 @@ io.on("connection", async socket => {
     const round = getRound(socket);
     const correct = isAnswerCorrect(round, answer);
     const partner_socket = getPartnerArtist(socket, round);
+    saveAnswer(round, answer, socket);
 
     //io.to(socket.id).emit("test", "T");
 
@@ -123,6 +124,16 @@ function getRound(socket) {
   let game_room = game_rooms.find(({ id }) => id === room_id);
   let currentRound = game_room.rounds[game_room.rounds.length - 1];
   return currentRound;
+}
+
+function saveAnswer(round, answer, socket) {
+  const partnership = round.partners.find(
+    ({ guesser }) => guesser === socket.id
+  );
+  partnership.answer = answer;
+  partnership.time = 1.5;
+
+  console.log("Partnership:", partnership);
 }
 
 function getPartnerArtist(socket, round) {
