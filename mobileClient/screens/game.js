@@ -17,7 +17,7 @@ export default function Game({ route, navigation }) {
   const [activeScreen, setActiveScreen] = useState(0);
   const [artistWord, setArtistWord] = useState("");
   const [guesserChoices, setGuesserChoices] = useState([]);
-  const [answer, setAnswer] = useState(null);
+  const [answer, setAnswer] = useState("");
 
   /* ****************************
             SOCKET
@@ -37,9 +37,8 @@ export default function Game({ route, navigation }) {
       setArtistWord(word);
     });
 
-    socket.on("evaluation", answer => {
-      console.log("RECIEVED", typeof correct, typeof answer);
-      setAnswer(answer);
+    socket.on("test", t => {
+      console.log("TEST recieved");
     });
   }, []);
 
@@ -50,19 +49,20 @@ export default function Game({ route, navigation }) {
       case 1:
         return (
           <React.Fragment>
-            <Artist socket={socket} word={artistWord} answer={answer} />
-            {/* {answer && <ArtistEvaluation answer={answer} />} */}
+            <Artist socket={socket} word={artistWord} />
+            <ArtistEvaluation socket={socket} word={artistWord} />
           </React.Fragment>
         );
       case 2:
         return (
           <React.Fragment>
-            <Guesser socket={socket} choices={guesserChoices} answer={answer} />
-            {/* <GuesserEvaluation
+            <Guesser socket={socket} />
+            <GuesserEvaluation
               choices={guesserChoices}
               socket={socket}
+
               // evaluation={evaluation}
-            /> */}
+            />
           </React.Fragment>
         );
       case 3:

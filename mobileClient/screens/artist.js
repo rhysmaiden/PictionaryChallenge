@@ -98,6 +98,7 @@ export default class artist extends Component {
 
     let socket = this.props.socket;
 
+    console.log("SENT PICTURE");
     socket.emit("picture", { picture: lines, username: "X" }, callback => {
       console.log("Sent picture");
     });
@@ -124,7 +125,7 @@ export default class artist extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <CountdownCircle
-            seconds={30}
+            seconds={1000}
             radius={30}
             borderWidth={8}
             color="#ff003f"
@@ -155,11 +156,6 @@ export default class artist extends Component {
             </View> */}
           </View>
         </View>
-        <View style={styles.answer}>
-          <Text>
-            {this.props.answer && "Partner answered: " + this.props.answer}
-          </Text>
-        </View>
       </View>
     );
   }
@@ -167,9 +163,9 @@ export default class artist extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "flex-start",
-    width: "100%"
+    width: "100%",
+    backgroundColor: "green"
   },
   sketch: {
     flex: 1

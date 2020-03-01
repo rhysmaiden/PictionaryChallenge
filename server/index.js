@@ -38,38 +38,27 @@ io.on("connection", async socket => {
   });
 
   socket.on("picture", async ({ username, picture }, callback) => {
-    socket.broadcast.emit("picture", picture);
+    const round = getRound(socket);
+    const partner_socket = getPartnerGuesser(socket, round);
+    io.to(partner_socket).emit("picture", picture);
+
+    // socket.broadcast.emit("picture", picture);
   });
 
-  socket.on("answer", async ({ answer }, callback) => {
+  socket.on("answer", async (answer, callback) => {
     console.log(answer);
+    console.log(typeof answer);
 
     const round = getRound(socket);
     const correct = isAnswerCorrect(round, answer);
-    const partner_socket = getPartnerSocket(socket, round);
+    const partner_socket = getPartnerArtist(socket, round);
 
-    console.log(socket.id);
-
-    // if (correct) {
-    //   io.to(socket.id).emit("evaluation", { correct: correct, answer: answer });
-    //   console.log("Sent ", { correct: correct, answer: answer }, "to Guesser");
-    // } else {
-    //   io.to(socket.id).emit("evaluation", {
-    //     correct: correct,
-    //     answer: round.correctWord
-    //   });
-    //   console.log(
-    //     "Sent ",
-    //     { correct: correct, answer: round.correctWord },
-    //     "to Guesser"
-    //   );
-    // }
-
-    io.to(socket.id).emit("evaluation", round.correctWord);
+    //io.to(socket.id).emit("test", "T");
 
     io.to(partner_socket).emit("evaluation", answer);
+    io.to(socket.id).emit("evaluation", round.correctWord);
 
-    console.log("Sent ", { correct: correct, answer: answer }, "to Artist");
+    //
   });
 });
 
@@ -136,9 +125,16 @@ function getRound(socket) {
   return currentRound;
 }
 
-function getPartnerSocket(socket, round) {
+function getPartnerArtist(socket, round) {
   let partner = round.partners.find(({ guesser }) => guesser === socket.id)
     .artist;
+
+  return partner;
+}
+
+function getPartnerGuesser(socket, round) {
+  let partner = round.partners.find(({ artist }) => artist === socket.id)
+    .guesser;
 
   return partner;
 }

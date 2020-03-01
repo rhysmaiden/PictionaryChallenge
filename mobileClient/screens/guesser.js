@@ -3,6 +3,7 @@ import * as ExpoPixi from "expo-pixi";
 import React, { Component, useEffect } from "react";
 import ImgToBase64 from "react-native-image-base64";
 import Button from "../components/primaryButton.js";
+import CountdownCircle from "react-native-countdown-circle";
 import {
   Image,
   Platform,
@@ -51,10 +52,12 @@ export default class guesser extends Component {
     ],
     answer: null,
     correct: null,
+    selectedAnswer: "",
     appState: AppState.currentState
   };
 
   handleAppStateChangeAsync = nextAppState => {
+    console.log("REFRESH");
     if (
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
@@ -108,28 +111,38 @@ export default class guesser extends Component {
   };
 
   selectOption(answer) {
-    let socket = this.props.socket;
-    socket.emit("answer", { answer }, callback => {
-      console.log("Sent guess");
-    });
+    //let socket = this.props.socket;
+    console.log("Guesser - SENT GUESS");
+    // socket.emit("answer", { answer }, callback => {
+    //   console.log("Sent guess");
+    // });
 
-    this.setState({ selectedAnswer: answer });
+    //this.setState({ selectedAnswerere: "cheese" });
   }
 
   componentDidUpdate(oldProps) {
-    if (this.props.answer === this.state.selectedAnswer) {
-      console.log("CORRECT");
-      console.log(this.props.answer, this.state.selectedAnswer);
-    } else {
-      console.log("Incorrect");
-      console.log(this.props.answer, this.state.selectedAnswer);
-    }
+    // if (this.props.answer === this.state.selectedAnswer) {
+    //   console.log("CORRECT");
+    //   console.log(this.props.answer, this.state.selectedAnswer);
+    // } else {
+    //   console.log("Incorrect");
+    //   console.log(this.props.answer, this.state.selectedAnswer);
+    // }
   }
 
   //TODO: Remove ability for guesser to draw
   render() {
     return (
       <View style={styles.container}>
+        <CountdownCircle
+          seconds={1000}
+          radius={30}
+          borderWidth={8}
+          color="#ff003f"
+          bgColor="#fff"
+          textStyle={{ fontSize: 20 }}
+          onTimeElapsed={() => console.log("Elapsed!")}
+        />
         {/* <Text>{this.props.evaluation && this.props.evaluation.correct}</Text> */}
         <View style={styles.container}>
           <View style={styles.header}>
@@ -152,23 +165,23 @@ export default class guesser extends Component {
             />
           </View>
         </View>
-        <View>
+        {/* <View>
           {this.props.choices.map(option => (
             <Button
               text={option}
               onPress={() => {
                 this.selectOption(option);
               }}
-              color={
-                option === this.state.selectedAnswer
-                  ? option === this.props.answer
-                    ? "green"
-                    : "red"
-                  : "rgb(52,186,241)"
-              }
+              // color={
+              //   option === this.state.selectedAnswer
+              //     ? option === this.props.answer
+              //       ? "green"
+              //       : "red"
+              //     : "rgb(52,186,241)"
+              // }
             />
           ))}
-        </View>
+        </View> */}
       </View>
     );
   }
