@@ -125,7 +125,7 @@ export default class artist extends Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <CountdownCircle
-            seconds={1000}
+            seconds={30}
             radius={30}
             borderWidth={8}
             color="#ff003f"

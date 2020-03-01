@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Button from "../components/primaryButton.js";
+import CountdownCircle from "react-native-countdown-circle";
 
 const guesserEvaluation = ({ choices, socket }) => {
   const [selected, setSelected] = useState("");
@@ -52,6 +53,15 @@ const guesserEvaluation = ({ choices, socket }) => {
           />
         ))}
       </View>
+      <CountdownCircle
+        seconds={30}
+        radius={30}
+        borderWidth={8}
+        color="#ff003f"
+        bgColor="#fff"
+        textStyle={{ fontSize: 20 }}
+        onTimeElapsed={() => console.log("Elapsed!")}
+      />
     </View>
   );
 };
