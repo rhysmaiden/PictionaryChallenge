@@ -48,19 +48,28 @@ io.on("connection", async socket => {
     const correct = isAnswerCorrect(round, answer);
     const partner_socket = getPartnerSocket(socket, round);
 
-    if (correct) {
-      io.to(socket.id).emit("evaluation", { correct: correct });
-    } else {
-      io.to(socket.id).emit("evaluation", {
-        correct: correct,
-        answer: round.correctWord
-      });
-    }
+    console.log(socket.id);
 
-    io.to(partner_socket).emit("evaluation", {
-      correct: correct,
-      answer: answer
-    });
+    // if (correct) {
+    //   io.to(socket.id).emit("evaluation", { correct: correct, answer: answer });
+    //   console.log("Sent ", { correct: correct, answer: answer }, "to Guesser");
+    // } else {
+    //   io.to(socket.id).emit("evaluation", {
+    //     correct: correct,
+    //     answer: round.correctWord
+    //   });
+    //   console.log(
+    //     "Sent ",
+    //     { correct: correct, answer: round.correctWord },
+    //     "to Guesser"
+    //   );
+    // }
+
+    io.to(socket.id).emit("evaluation", round.correctWord);
+
+    io.to(partner_socket).emit("evaluation", answer);
+
+    console.log("Sent ", { correct: correct, answer: answer }, "to Artist");
   });
 });
 

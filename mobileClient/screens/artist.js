@@ -1,8 +1,7 @@
 import Expo from "expo";
 import * as ExpoPixi from "expo-pixi";
 import React, { Component, useEffect } from "react";
-// import RNFetchBlob from "react-native-fetch-blob";
-// import RNFS from "react-native-fs";
+import CountdownCircle from "react-native-countdown-circle";
 import ImgToBase64 from "react-native-image-base64";
 import {
   Image,
@@ -50,10 +49,13 @@ export default class artist extends Component {
         width: 10
       }
     ],
+    answer: null,
+    correct: null,
     appState: AppState.currentState
   };
 
   handleAppStateChangeAsync = nextAppState => {
+    console.log("Handle change");
     if (
       this.state.appState.match(/inactive|background/) &&
       nextAppState === "active"
@@ -72,14 +74,6 @@ export default class artist extends Component {
 
   componentDidMount() {
     AppState.addEventListener("change", this.handleAppStateChangeAsync);
-    let socket = this.props.socket;
-    // socket.on("evaluation", ({ correct, answer }) => {
-    //   console.log("Artist recieved evaluation");
-    //   // console.log("Artist recieved evaluation", correct, answer);
-    //   this.setState({
-    //     answer: answer
-    //   });
-    // });
   }
 
   componentWillUnmount() {
@@ -109,6 +103,18 @@ export default class artist extends Component {
     });
   };
 
+  componentDidUpdate(oldProps) {
+    // if (this.state.correct === null) {
+    //   console.log("Update state");
+    //   this.setState({
+    //     correct: this.props.evaluation.correct,
+    //     answer: this.props.evaluation.answer
+    //   });
+    // } else {
+    //   console.log("Didn't update", this.state.correct);
+    // }
+  }
+
   onReady = async () => {
     console.log("ready!");
   };
@@ -117,12 +123,21 @@ export default class artist extends Component {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
+          <CountdownCircle
+            seconds={30}
+            radius={30}
+            borderWidth={8}
+            color="#ff003f"
+            bgColor="#fff"
+            textStyle={{ fontSize: 20 }}
+            onTimeElapsed={() => console.log("Elapsed!")}
+          />
           <Text>Round 1</Text>
-          {/* <Text style={styles.word}>{this.props.word}</Text> */}
-          <Text style={styles.word}>TURTLE</Text>
+
+          <Text style={styles.word}>{this.props.word}</Text>
         </View>
 
-        <Text>{this.props.word}</Text>
+        {/* <Text>{this.state.correct != null && this.state.answer}</Text> */}
         <View style={styles.container}>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch
@@ -140,15 +155,11 @@ export default class artist extends Component {
             </View> */}
           </View>
         </View>
-        {/* <Button
-          color={"blue"}
-          title="undo"
-          style={styles.button}
-          onPress={() => {
-            this.sketch.undo();
-          }}
-        />
-        <Text>{this.state.answer && this.state.answer}</Text> */}
+        <View style={styles.answer}>
+          <Text>
+            {this.props.answer && "Partner answered: " + this.props.answer}
+          </Text>
+        </View>
       </View>
     );
   }
@@ -157,7 +168,8 @@ export default class artist extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    width: "100%"
   },
   sketch: {
     flex: 1
@@ -196,5 +208,11 @@ const styles = StyleSheet.create({
   header: {
     alignItems: "center",
     padding: 15
+  },
+  answer: {
+    alignItems: "center",
+    justifyContent: "center",
+
+    flex: 1
   }
 });

@@ -49,6 +49,8 @@ export default class guesser extends Component {
         width: 10
       }
     ],
+    answer: null,
+    correct: null,
     appState: AppState.currentState
   };
 
@@ -75,45 +77,28 @@ export default class guesser extends Component {
 
     let socket = this.props.socket;
 
-    // socket.on("picture", picture => {
-    //   console.log("PITCURE RECIEVED");
-    //   var lines = [];
+    socket.on("picture", picture => {
+      console.log("PITCURE RECIEVED");
+      var lines = [];
 
-    //   for (let x of picture) {
-    //     var points = [];
-    //     for (let pt of x) {
-    //       points.push({ x: pt.x, y: pt.y });
-    //     }
+      for (let x of picture) {
+        var points = [];
+        for (let pt of x) {
+          points.push({ x: pt.x, y: pt.y });
+        }
 
-    //     var line = { points: points, color: 0xff00ff, alpha: 1, width: 10 };
-    //     lines.push(line);
-    //   }
+        var line = { points: points, color: 0xff00ff, alpha: 1, width: 10 };
+        lines.push(line);
+      }
 
-    //   this.setState({
-    //     lines: lines
-    //   });
-    // });
-
-    // socket.on("evaluation", ({ correct, answer }) => {
-    //   console.log("Guesser recieved evaluation");
-    //   // console.log("Guesser recieved evaluation", correct, answer);
-    //   if (correct) {
-    //     this.setState({ correct: "CORRECT" });
-    //   } else {
-    //     this.setState({ correct: "INCORRECT" });
-    //   }
-    // });
+      this.setState({
+        lines: lines
+      });
+    });
   }
 
   componentWillUnmount() {
     AppState.removeEventListener("change", this.handleAppStateChangeAsync);
-  }
-
-  selectOption(answer) {
-    let socket = this.props.socket;
-    socket.emit("answer", { answer }, callback => {
-      console.log("Sent guess");
-    });
   }
 
   onChangeAsync = async () => {};
@@ -122,16 +107,37 @@ export default class guesser extends Component {
     console.log("ready!");
   };
 
+  selectOption(answer) {
+    let socket = this.props.socket;
+    socket.emit("answer", { answer }, callback => {
+      console.log("Sent guess");
+    });
+
+    this.setState({ selectedAnswer: answer });
+  }
+
+  componentDidUpdate(oldProps) {
+    if (this.props.answer === this.state.selectedAnswer) {
+      console.log("CORRECT");
+      console.log(this.props.answer, this.state.selectedAnswer);
+    } else {
+      console.log("Incorrect");
+      console.log(this.props.answer, this.state.selectedAnswer);
+    }
+  }
+
   //TODO: Remove ability for guesser to draw
   render() {
     return (
       <View style={styles.container}>
-        {/* <Text>{this.state.correct && this.state.correct}</Text> */}
+        {/* <Text>{this.props.evaluation && this.props.evaluation.correct}</Text> */}
         <View style={styles.container}>
           <View style={styles.header}>
             <Text>Round 1</Text>
             {/* <Text style={styles.word}>{this.props.word}</Text> */}
-            <Text style={styles.word}>TURTLE</Text>
+            <Text style={styles.word}>
+              {/* {this.state.correct != null && this.state.answer} */}
+            </Text>
           </View>
           <View style={styles.sketchContainer}>
             <ExpoPixi.Sketch
@@ -145,20 +151,23 @@ export default class guesser extends Component {
               initialLines={this.state.lines}
             />
           </View>
-          <View style={styles.options}>
-            {/* {this.props.choices.map(option => (
+        </View>
+        <View>
+          {this.props.choices.map(option => (
             <Button
               text={option}
               onPress={() => {
                 this.selectOption(option);
               }}
+              color={
+                option === this.state.selectedAnswer
+                  ? option === this.props.answer
+                    ? "green"
+                    : "red"
+                  : "rgb(52,186,241)"
+              }
             />
-          ))} */}
-            <Button text="Option 1" />
-            <Button text="Option 1" />
-            <Button text="Option 1" />
-            <Button text="Option 1" />
-          </View>
+          ))}
         </View>
       </View>
     );
@@ -168,7 +177,8 @@ export default class guesser extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    width: "100%"
   },
   sketch: {
     flex: 1
@@ -177,7 +187,8 @@ const styles = StyleSheet.create({
     height: 300,
     backgroundColor: "white",
     borderColor: "black",
-    borderWidth: 5
+    borderWidth: 5,
+    width: "100%"
   },
   image: {
     flex: 1
