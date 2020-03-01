@@ -7,12 +7,14 @@ const guesserEvaluation = ({ choices, socket }) => {
   const [selected, setSelected] = useState("");
   const [answer, setAnswer] = useState("");
   const selectOption = op => {
-    console.log("GUESSER - SEND SELECTION");
-    socket.emit("answer", op, callback => {
-      console.log("Sent guess");
-    });
+    if (answer === "") {
+      console.log("GUESSER - SEND SELECTION");
+      socket.emit("answer", op, callback => {
+        console.log("Sent guess");
+      });
 
-    setSelected(op);
+      setSelected(op);
+    }
   };
 
   useEffect(() => {
