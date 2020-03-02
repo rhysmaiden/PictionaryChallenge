@@ -73,7 +73,7 @@ export default function Game({ route, navigation }) {
   }
 
   return (
-    <View style={{ flex: 1, marginTop: 50, alignItems: "center" }}>
+    <View style={{ flex: 1, marginTop: 20, alignItems: "center" }}>
       {selectScreen(activeScreen)}
     </View>
   );

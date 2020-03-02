@@ -134,19 +134,10 @@ export default class guesser extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <CountdownCircle
-          seconds={1000}
-          radius={30}
-          borderWidth={8}
-          color="#ff003f"
-          bgColor="#fff"
-          textStyle={{ fontSize: 20 }}
-          onTimeElapsed={() => console.log("Elapsed!")}
-        />
         {/* <Text>{this.props.evaluation && this.props.evaluation.correct}</Text> */}
         <View style={styles.container}>
           <View style={styles.header}>
-            <Text>Round 1</Text>
+            <Text style={{ fontSize: 30 }}>Round 1</Text>
             {/* <Text style={styles.word}>{this.props.word}</Text> */}
             <Text style={styles.word}>
               {/* {this.state.correct != null && this.state.answer} */}
@@ -189,7 +180,6 @@ export default class guesser extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "flex-start",
     width: "100%"
   },

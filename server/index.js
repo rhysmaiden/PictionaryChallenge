@@ -45,18 +45,18 @@ io.on("connection", async socket => {
     // socket.broadcast.emit("picture", picture);
   });
 
-  socket.on("answer", async (answer, callback) => {
+  socket.on("answer", async ({ answer, time }, callback) => {
     console.log(answer);
     console.log(typeof answer);
 
     const round = getRound(socket);
     const correct = isAnswerCorrect(round, answer);
     const partner_socket = getPartnerArtist(socket, round);
-    saveAnswer(round, answer, socket);
+    saveAnswer(round, answer, time, socket);
 
     //io.to(socket.id).emit("test", "T");
 
-    io.to(partner_socket).emit("evaluation", answer);
+    io.to(partner_socket).emit("evaluation", { answer: answer, time: time });
     io.to(socket.id).emit("evaluation", round.correctWord);
 
     //
@@ -126,12 +126,12 @@ function getRound(socket) {
   return currentRound;
 }
 
-function saveAnswer(round, answer, socket) {
+function saveAnswer(round, answer, time, socket) {
   const partnership = round.partners.find(
     ({ guesser }) => guesser === socket.id
   );
   partnership.answer = answer;
-  partnership.time = 1.5;
+  partnership.time = time;
 
   console.log("Partnership:", partnership);
 }

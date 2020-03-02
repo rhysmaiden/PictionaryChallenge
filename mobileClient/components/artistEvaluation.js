@@ -10,23 +10,14 @@ const artistEvaluation = ({ socket, word }) => {
   const timer = useRef();
 
   useEffect(() => {
-    socket.on(
-      "evaluation",
-      answer => {
-        console.log("ARTIST ANSWER:", answer);
-        console.log();
-        setTime(timer.current.state.elapsed);
-        setAnswer(answer);
-      },
-      []
-    );
-  });
+    socket.on("evaluation", ({ answer, time }) => {
+      console.log("ARTIST ANSWER:", answer);
+      console.log();
+      setTime(time / 1000);
+      setAnswer(answer);
+    });
+  }, []);
 
-  const getTime = msecs => {
-    if (time != undefined) {
-      //console.log(timer);
-    }
-  };
   return (
     <View
       style={{
@@ -38,18 +29,18 @@ const artistEvaluation = ({ socket, word }) => {
         alignItems: "center"
       }}
     >
-      <Stopwatch
-        msecs
-        start={true}
-        getMsecs={msecs => getTime(msecs)}
-        ref={timer}
-      />
+      <Stopwatch msecs start={true} ref={timer} options={options} />
       <Text>Partner answered:</Text>
       {/* <Text>{answer && answer}</Text> */}
       <Text
         style={[styles.answer, { color: answer === word ? "green" : "red" }]}
       >
         {answer && answer}
+      </Text>
+      <Text
+        style={[styles.answer, { color: answer === word ? "green" : "red" }]}
+      >
+        {time && time}
       </Text>
     </View>
   );
@@ -63,5 +54,16 @@ const styles = StyleSheet.create({
     fontSize: 20
   }
 });
+
+const options = {
+  container: {
+    height: 0
+  },
+  text: {
+    fontSize: 30,
+    color: "#FFF",
+    marginLeft: 7
+  }
+};
 
 export default artistEvaluation;
