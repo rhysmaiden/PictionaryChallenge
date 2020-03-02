@@ -6,6 +6,7 @@ import Button from "../components/primaryButton.js";
 import Guesser from "./guesser.js";
 import Artist from "./artist.js";
 import RoundIntro from "./roundIntro.js";
+import RoundResults from "./roundResults.js";
 import ArtistEvaluation from "../components/artistEvaluation.js";
 import GuesserEvaluation from "../components/guesserEvaluation.js";
 
@@ -37,8 +38,8 @@ export default function Game({ route, navigation }) {
       setArtistWord(word);
     });
 
-    socket.on("test", t => {
-      console.log("TEST recieved");
+    socket.on("results", results => {
+      console.log("Recieved results");
     });
   }, []);
 
@@ -66,7 +67,7 @@ export default function Game({ route, navigation }) {
           </React.Fragment>
         );
       case 3:
-        return <Guesser />;
+        return <RoundResults />;
       default:
         return <Guesser />;
     }
