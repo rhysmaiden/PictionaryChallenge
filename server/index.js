@@ -167,7 +167,7 @@ function allPartnersAnswered(round, socket) {
     console.log(round.partners);
 
     //3. Send all results of everyone in room
-    io.in(room_id).emit("results", round.partners);
+    io.in(room_id).emit("results", round);
 
     //4. Tell everyone to change screen to 3
     setTimeout(function() {

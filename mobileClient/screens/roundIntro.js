@@ -5,37 +5,6 @@ import Button from "../components/primaryButton.js";
 export default function roundIntro({ navigation, roundInfo }) {
   const [matchupAnimation] = useState(new Animated.Value(1000));
 
-  const styles = StyleSheet.create({
-    background: {
-      flex: 1,
-      width: "100%",
-      backgroundColor: "rgb(27, 29, 33)",
-      alignItems: "center",
-      justifyContent: "center"
-    },
-    matchup: {
-      flexDirection: "row",
-      width: "100%",
-      justifyContent: "space-evenly",
-      flexWrap: "wrap"
-    },
-    user: {
-      backgroundColor: "black",
-      color: "white",
-      padding: 10,
-      justifyContent: "center",
-      alignItems: "center",
-      height: 100,
-      width: 100,
-      borderRadius: 100,
-      marginBottom: 10
-    },
-    userText: {
-      color: "white",
-      fontSize: 20
-    }
-  });
-
   return (
     <View style={styles.background}>
       <Text>roundIntro</Text>
@@ -55,3 +24,34 @@ export default function roundIntro({ navigation, roundInfo }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: "rgb(27, 29, 33)",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  matchup: {
+    flexDirection: "row",
+    width: "100%",
+    justifyContent: "space-evenly",
+    flexWrap: "wrap"
+  },
+  user: {
+    backgroundColor: "black",
+    color: "white",
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 100,
+    width: 100,
+    borderRadius: 100,
+    marginBottom: 10
+  },
+  userText: {
+    color: "white",
+    fontSize: 20
+  }
+});

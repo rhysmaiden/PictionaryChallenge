@@ -29,6 +29,12 @@ export default function Game({ route, navigation }) {
     socket.on("changeScreen", screenNumber => {
       console.log("Recieved change Screen request");
       setActiveScreen(screenNumber);
+
+      // if (screenNumber === 3) {
+      //   setTimeout(function() {
+      //     setActiveScreen(5);
+      //   }, 3000);
+      // }
     });
 
     socket.on("guesserInformation", words => {
@@ -46,6 +52,7 @@ export default function Game({ route, navigation }) {
 
     socket.on("results", results => {
       console.log("Recieved results");
+      setRoundInfo(results);
     });
   }, []);
 
@@ -73,9 +80,11 @@ export default function Game({ route, navigation }) {
           </React.Fragment>
         );
       case 3:
-        return <RoundResults />;
+        return <RoundResults roundInfo={roundInfo} />;
       case 4:
         return <Text>GAME IS ABOUT TO START</Text>;
+      case 5:
+        return <Text>Total Results</Text>;
       default:
         return <Guesser />;
     }
