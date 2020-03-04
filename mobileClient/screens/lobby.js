@@ -29,6 +29,7 @@ export default function Lobby({ route, navigation }) {
     socket = io("http://" + ENDPOINT);
 
     socket.emit("joinQueue", { username: username }, info => {
+      console.log(username);
       console.log("Joined queue");
     });
 

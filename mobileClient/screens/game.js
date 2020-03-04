@@ -15,10 +15,11 @@ const { manifest } = Constants;
 let socket;
 
 export default function Game({ route, navigation }) {
-  const [activeScreen, setActiveScreen] = useState(0);
+  const [activeScreen, setActiveScreen] = useState(4);
   const [artistWord, setArtistWord] = useState("");
   const [guesserChoices, setGuesserChoices] = useState([]);
   const [answer, setAnswer] = useState("");
+  const [roundInfo, setRoundInfo] = useState({});
 
   /* ****************************
             SOCKET
@@ -38,6 +39,11 @@ export default function Game({ route, navigation }) {
       setArtistWord(word);
     });
 
+    socket.on("roundInfo", roundInfo => {
+      console.log("RECIEVED ROUND INFO");
+      setRoundInfo(roundInfo);
+    });
+
     socket.on("results", results => {
       console.log("Recieved results");
     });
@@ -46,7 +52,7 @@ export default function Game({ route, navigation }) {
   function selectScreen(index) {
     switch (index) {
       case 0:
-        return <RoundIntro />;
+        return <RoundIntro roundInfo={roundInfo} />;
       case 1:
         return (
           <React.Fragment>
@@ -68,6 +74,8 @@ export default function Game({ route, navigation }) {
         );
       case 3:
         return <RoundResults />;
+      case 4:
+        return <Text>GAME IS ABOUT TO START</Text>;
       default:
         return <Guesser />;
     }

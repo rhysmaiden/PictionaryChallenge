@@ -24,6 +24,7 @@ const server = http.createServer(app);
 const io = socketio(server);
 
 let game_rooms = [];
+let sockets_map = {};
 
 //SOCKETS
 io.on("connection", async socket => {
@@ -31,6 +32,7 @@ io.on("connection", async socket => {
 
   socket.on("close", async ({ username }, callback) => {
     removeUserFromLobby(socket, username);
+    delete sockets_map[socked.id];
   });
 
   socket.on("joinQueue", async ({ username }, callback) => {
@@ -40,28 +42,24 @@ io.on("connection", async socket => {
   socket.on("picture", async ({ username, picture }, callback) => {
     const round = getRound(socket);
     const partner_socket = getPartnerGuesser(socket, round);
-    io.to(partner_socket).emit("picture", picture);
-
-    // socket.broadcast.emit("picture", picture);
+    io.to(partner_socket.socket).emit("picture", picture);
   });
 
   socket.on("answer", async ({ answer, time }, callback) => {
-    console.log(answer);
-    console.log(typeof answer);
-
     const round = getRound(socket);
     const correct = isAnswerCorrect(round, answer);
     const partner_socket = getPartnerArtist(socket, round);
     saveAnswer(round, answer, time, socket);
 
-    io.to(partner_socket).emit("evaluation", { answer: answer, time: time });
+    io.to(partner_socket.socket).emit("evaluation", {
+      answer: answer,
+      time: time
+    });
     io.to(socket.id).emit("evaluation", round.correctWord);
 
     round.usersAnswered += 1;
 
     allPartnersAnswered(round, socket);
-
-    //
   });
 });
 
@@ -77,6 +75,7 @@ async function updateLobby() {
 }
 
 async function addUserToLobby(socket, username) {
+  sockets_map[socket.id] = username;
   socket.username = username;
   socket.join("lobby");
   updateLobby();
@@ -130,7 +129,7 @@ function getRound(socket) {
 
 function saveAnswer(round, answer, time, socket) {
   const partnership = round.partners.find(
-    ({ guesser }) => guesser === socket.id
+    ({ guesser }) => guesser.socket === socket.id
   );
   partnership.answer = answer;
   partnership.time = time;
@@ -139,14 +138,15 @@ function saveAnswer(round, answer, time, socket) {
 }
 
 function getPartnerArtist(socket, round) {
-  let partner = round.partners.find(({ guesser }) => guesser === socket.id)
-    .artist;
+  let partner = round.partners.find(
+    ({ guesser }) => guesser.socket === socket.id
+  ).artist;
 
   return partner;
 }
 
 function getPartnerGuesser(socket, round) {
-  let partner = round.partners.find(({ artist }) => artist === socket.id)
+  let partner = round.partners.find(({ artist }) => artist.socket === socket.id)
     .guesser;
 
   return partner;
@@ -173,56 +173,86 @@ function allPartnersAnswered(round, socket) {
     setTimeout(function() {
       io.in(room_id).emit("changeScreen", 3);
       let game_room = game_rooms.find(({ id }) => id === room_id);
-      startRound(game_room);
+
+      setTimeout(function() {
+        if (!shouldGameEnd(game_room)) {
+          startRound(game_room);
+        } else {
+          endGame(game_room);
+        }
+      }, 3000);
     }, 2000);
   }
 }
 
-function startGame(room_id, clients) {
+function shouldGameEnd(game_room) {
+  const roundsCompleted = game_room.rounds.length;
+  const totalRounds = game_room.clients.length * 2 - 2;
+
+  if (roundsCompleted >= totalRounds) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function startGame(room_id, users) {
+  const clients = [];
+  users.map(user => {
+    clients.push({ socket: user, username: sockets_map[user] });
+  });
+
   const game_room = { id: room_id, rounds: [], clients: clients };
   game_rooms.push(game_room);
   startRound(game_room);
 }
 
+function endGame(game_room) {
+  console.log("END GAME");
+}
+
 function startRound(game_room) {
   console.log("START ROUND");
-  console.log(game_room);
 
   const partners = [];
-
   partners.push(
     setRoundPartners(game_room.rounds.length + 1, game_room.clients)
   );
 
-  console.log(partners);
+  words = getWords();
+  const correctWord = words[0];
+
+  let round = {
+    partners: partners,
+    words: words,
+    correctWord: correctWord,
+    usersAnswered: 0
+  };
 
   setTimeout(function() {
-    words = getWords();
-    const correctWord = words[0];
-
-    let round = {
-      partners: partners,
-      words: words,
-      correctWord: correctWord,
-      usersAnswered: 0
-    };
-    game_room.rounds.push(round);
-
-    partners.map(({ artist, guesser }) => {
-      io.to(artist).emit("artistInformation", words[0]);
-      shuffle(words);
-      io.to(guesser).emit("guesserInformation", words);
-    });
-
-    //WAIT ONE SECOND TO MAKE SURE USERS HAVE THE INFORMATION
+    io.in(game_room.id).emit("roundInfo", round);
     setTimeout(function() {
+      io.in(game_room.id).emit("changeScreen", 0);
+
+      game_room.rounds.push(round);
+
       partners.map(({ artist, guesser }) => {
-        console.log("CHANGE SCREEN");
-        io.to(artist).emit("changeScreen", 1);
-        io.to(guesser).emit("changeScreen", 2);
+        io.to(artist.socket).emit("artistInformation", words[0]);
+        shuffle(words);
+        io.to(guesser.socket).emit("guesserInformation", words);
       });
-    }, 2000);
-  }, 2000);
+    }, 3000);
+  }, 1000);
+
+  //WAIT ONE SECOND TO MAKE SURE USERS HAVE THE INFORMATION
+  setTimeout(function() {
+    partners.map(({ artist, guesser }) => {
+      console.log("CHANGE SCREEN");
+      console.log(artist);
+      io.to(artist.socket).emit("changeScreen", 1);
+      io.to(guesser.socket).emit("changeScreen", 2);
+    });
+  }, 10000);
 }
 
 function getWords() {
